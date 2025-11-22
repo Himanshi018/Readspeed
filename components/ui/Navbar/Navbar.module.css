@@ -1,0 +1,20 @@
+/* EN: Navbar root styles - light peach background, sticky header | HI: Navbar ka light peach background, sticky header */
+.root {
+  @apply sticky top-0 bg-[#fff1f0] z-40 transition-all duration-150 h-16 md:h-20;
+}
+
+.link {
+  @apply inline-flex items-center leading-6 font-medium transition ease-in-out duration-75 cursor-pointer text-[#9f1239] rounded-md p-1;
+}
+
+.link:hover {
+  @apply text-[#7f0d2d];
+}
+
+.link:focus {
+  @apply outline-none text-[#7f0d2d] ring-2 ring-[#ff6b6b] ring-opacity-50;
+}
+
+.logo {
+  @apply cursor-pointer rounded-full transform duration-100 ease-in-out;
+}
