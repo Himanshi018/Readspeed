@@ -1,10 +1,13 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient as createSupabaseServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { Database } from '@/types_db'
 
-export const createClient = () => {
+type SupabaseClient = ReturnType<typeof createSupabaseServerClient<Database>>
+
+export const createServerClient = (): SupabaseClient => {
   const cookieStore = cookies()
 
-  return createServerClient(
+  return createSupabaseServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
