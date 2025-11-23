@@ -1,3 +1,5 @@
+import { createClient } from '@/utils/supabase/client';
+import { getUser, getUserDetails, getSubscription } from '@/utils/supabase/queries';
 'use client';
 
 import { useEffect, useRef, useState } from 'react';

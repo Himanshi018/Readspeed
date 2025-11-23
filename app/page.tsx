@@ -1,3 +1,5 @@
+import { createClient } from '@/lib/supabase/client';
+import { getUser, getUserDetails, getSubscription } from '@/utils/supabase/queries';
 import Link from "next/link";
 
 export default function Home() {
