@@ -1,14 +1,14 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 
-export const getUser = cache(async (supabase: SupabaseClient<any>) => {
+export const getUser = unstable_cache(async (supabase: SupabaseClient<any>) => {
   const {
     data: { user }
   } = await supabase.auth.getUser();
   return user;
 });
 
-export const getSubscription = cache(async (supabase: SupabaseClient<any>) => {
+export const getSubscription = unstable_cache(async (supabase: SupabaseClient<any>) => {
   const { data: subscription, error } = await supabase
     .from('subscriptions')
     .select('*, prices(*, products(*))')
@@ -22,7 +22,7 @@ export const getSubscription = cache(async (supabase: SupabaseClient<any>) => {
   return subscription ?? null;
 });
 
-export const getUserDetails = cache(async (supabase: SupabaseClient<any>) => {
+export const getUserDetails = unstable_cache(async (supabase: SupabaseClient<any>) => {
   const { data: userDetails, error } = await supabase
     .from('users')
     .select('*')
@@ -35,7 +35,7 @@ export const getUserDetails = cache(async (supabase: SupabaseClient<any>) => {
   return userDetails;
 });
 
-export const getProducts = cache(async (supabase: SupabaseClient<any>) => {
+export const getProducts = unstable_cache(async (supabase: SupabaseClient<any>) => {
   const { data: products, error } = await supabase
     .from('products')
     .select('*, prices(*)')
