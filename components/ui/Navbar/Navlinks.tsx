@@ -4,7 +4,6 @@
 import Link from 'next/link';
 import { SignOut } from '@/utils/auth-helpers/server';
 import { handleRequest } from '@/utils/auth-helpers/client';
-import Logo from '@/components/icons/Logo';
 import { usePathname, useRouter } from 'next/navigation';
 import { getRedirectMethod } from '@/utils/auth-helpers/settings';
 import s from './Navbar.module.css';
@@ -23,7 +22,13 @@ export default function Navlinks({ user }: NavlinksProps) {
       <div className="flex items-center flex-1">
         <Link href="/" className="flex items-center space-x-2" aria-label="Logo">
           <span className={s.logo}>
-            <Logo />
+            <img 
+              src="/favicon.ico.png" 
+              alt="ReadSpeed Logo" 
+              width={32} 
+              height={32} 
+              className="rounded-full"
+            />
           </span>
           {/* EN: ReadSpeed text logo | HI: ReadSpeed text logo */}
           <span className="text-xl font-bold text-[#9f1239] hidden sm:inline-block">
