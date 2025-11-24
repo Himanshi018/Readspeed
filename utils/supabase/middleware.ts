@@ -2,11 +2,11 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
 export const createClient = (request: NextRequest) => {
-  // Create an unmodified response
+  // Create a response that will be used to set cookies
   let response = NextResponse.next({
     request: {
-      headers: request.headers
-    }
+      headers: request.headers,
+    },
   });
 
   const supabase = createServerClient(
@@ -18,42 +18,44 @@ export const createClient = (request: NextRequest) => {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          // If the cookie is updated, update the cookies for the request and response
-          request.cookies.set({
-            name,
-            value,
-            ...options
-          });
+          // Clone the request headers
+          const newHeaders = new Headers(request.headers);
+          
+          // Create a new response with the updated cookies
           response = NextResponse.next({
             request: {
-              headers: request.headers
-            }
+              headers: newHeaders,
+            },
           });
+          
+          // Set the cookie on the response
           response.cookies.set({
             name,
             value,
-            ...options
+            ...options,
           });
         },
         remove(name: string, options: CookieOptions) {
-          // If the cookie is removed, update the cookies for the request and response
-          request.cookies.set({
-            name,
-            value: '',
-            ...options
-          });
+          // Clone the request headers
+          const newHeaders = new Headers(request.headers);
+          
+          // Create a new response with the updated cookies
           response = NextResponse.next({
             request: {
-              headers: request.headers
-            }
+              headers: newHeaders,
+            },
           });
+          
+          // Delete the cookie by setting it with an expired date
           response.cookies.set({
             name,
             value: '',
-            ...options
+            ...options,
+            maxAge: 0,
+            expires: new Date(0),
           });
-        }
-      }
+        },
+      },
     }
   );
 
@@ -62,23 +64,18 @@ export const createClient = (request: NextRequest) => {
 
 export const updateSession = async (request: NextRequest) => {
   try {
-    // This `try/catch` block is only here for the interactive tutorial.
-    // Feel free to remove once you have Supabase connected.
     const { supabase, response } = createClient(request);
-
-    // This will refresh session if expired - required for Server Components
-    // https://supabase.com/docs/guides/auth/server-side/nextjs
+    
+    // Refresh session if expired
     await supabase.auth.getUser();
-
+    
     return response;
   } catch (e) {
-    // If you are here, a Supabase client could not be created!
-    // This is likely because you have not set up environment variables.
-    // Check out http://localhost:3000 for Next Steps.
+    console.error('Error in updateSession:', e);
     return NextResponse.next({
       request: {
-        headers: request.headers
-      }
+        headers: request.headers,
+      },
     });
   }
 };
