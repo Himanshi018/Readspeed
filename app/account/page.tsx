@@ -3,19 +3,30 @@ import EmailForm from '@/components/ui/AccountForms/EmailForm';
 import NameForm from '@/components/ui/AccountForms/NameForm';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
-import { getUser, getUserDetails, getSubscription } from '@/utils/supabase';
 
 export default async function Account() {
   const supabase = createClient();
-  const [user, userDetails, subscription] = await Promise.all([
-    getUser(supabase),
-    getUserDetails(supabase),
-    getSubscription(supabase)
-  ]);
+
+  // --- NEW: directly use Supabase SSR methods ---
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    return redirect('/signin');
+    redirect('/signin');
   }
+
+  const { data: userDetails } = await supabase
+    .from('user_details')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', user.id)
+    .maybeSingle();
 
   return (
     <section className="mb-32 bg-black">
@@ -29,6 +40,7 @@ export default async function Account() {
           </p>
         </div>
       </div>
+
       <div className="p-4">
         <CustomerPortalForm subscription={subscription} />
         <NameForm userName={userDetails?.full_name ?? ''} />
