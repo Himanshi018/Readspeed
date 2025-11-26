@@ -1,4 +1,4 @@
-import CustomerPortalForm from '@/components/ui/AccountForms/CustomerPortalForm';
+// Customer portal temporarily disabled
 import EmailForm from '@/components/ui/AccountForms/EmailForm';
 import NameForm from '@/components/ui/AccountForms/NameForm';
 import { redirect } from 'next/navigation';
@@ -22,11 +22,7 @@ export default async function Account() {
     .eq('id', user.id)
     .single();
 
-  const { data: subscription } = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('user_id', user.id)
-    .maybeSingle();
+  // Subscription features temporarily disabled
 
   return (
     <section className="mb-32 bg-black">
@@ -36,13 +32,12 @@ export default async function Account() {
             Account
           </h1>
           <p className="max-w-2xl m-auto mt-5 text-xl text-zinc-200 sm:text-center sm:text-2xl">
-            We partnered with Stripe for a simplified billing.
+            Manage your account settings
           </p>
         </div>
       </div>
 
       <div className="p-4">
-        <CustomerPortalForm subscription={subscription} />
         <NameForm userName={userDetails?.full_name ?? ''} />
         <EmailForm userEmail={user.email} />
       </div>

@@ -46,6 +46,10 @@ export default async function RootLayout({ children }: PropsWithChildren) {
         <Suspense>
           <Toaster />
         </Suspense>
+        <script
+          src="https://sdk.cashfree.com/js/ui/2.0.0/cashfree.js"
+          async
+        ></script>
       </body>
     </html>
   );

@@ -1,5 +1,4 @@
-import { createClient } from '@/lib/supabase/client';
-import { getUser, getUserDetails, getSubscription } from '@/utils/supabase/queries';
+// Premium features temporarily disabled
 import Link from "next/link";
 
 export default function Home() {
@@ -36,13 +35,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* EN: Upsell button placeholder | HI: Yeh button sirf demo hai, abhi koi backend nahi */}
-        <button
-          type="button"
-          className="rounded-2xl border border-[#ff6b6b]/40 bg-white/70 px-6 py-4 text-base font-semibold text-[#ff6b6b] shadow-[0_15px_60px_rgba(255,107,107,0.15)] backdrop-blur-md transition hover:-translate-y-1 hover:bg-white"
-        >
-          Remove watermark + Save history – $9 one-time
-        </button>
+        {/* Premium features temporarily disabled */}
       </div>
 
       <footer className="mt-12 text-xs text-[#a36860]">

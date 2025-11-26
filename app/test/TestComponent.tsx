@@ -58,6 +58,7 @@ export default function TestComponent() {
   const [wordsRead, setWordsRead] = useState(0);
   const [wpm, setWpm] = useState(0);
   const [finalWpm, setFinalWpm] = useState(0);
+  const [testComplete, setTestComplete] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const wpmIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -256,12 +257,6 @@ export default function TestComponent() {
                 </Link>
               </div>
 
-              <button
-                type="button"
-                className="w-full rounded-2xl border border-[#ff6b6b]/40 bg-white px-6 py-4 text-base font-semibold text-[#ff6b6b] shadow-[0_15px_60px_rgba(255,107,107,0.2)] transition hover:-translate-y-1 sm:w-auto"
-              >
-                Remove watermark + Save history – $9 one-time
-              </button>
             </div>
           )}
         </div>

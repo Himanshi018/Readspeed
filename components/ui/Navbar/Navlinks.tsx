@@ -43,6 +43,9 @@ export default function Navlinks({ user }: NavlinksProps) {
           <Link href="/test" className={s.link}>
             Test
           </Link>
+          <Link href="/about" className={s.link}>
+            About
+          </Link>
           {user && (
             <Link href="/account" className={s.link}>
               Account
@@ -51,15 +54,7 @@ export default function Navlinks({ user }: NavlinksProps) {
         </nav>
       </div>
       
-      {/* EN: Right side - Premium button aligned with logo | HI: Right side - Premium button logo ke saath aligned */}
-      <div className="flex items-center">
-        <Link
-          href="/premium"
-          className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#ff6b6b] to-[#ff8787] rounded-xl shadow-md transition-transform hover:scale-105"
-        >
-          Go Premium – $9 one-time
-        </Link>
-      </div>
+      {/* Premium features temporarily disabled */}
     </div>
   );
 }

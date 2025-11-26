@@ -22,10 +22,14 @@
     "supabase:pull": "npx supabase db pull"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-sdk": "^0.1.7",
     "@radix-ui/react-toast": "^1.1.5",
     "@stripe/stripe-js": "2.4.0",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.84.0",
+    "@types/canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.4",
+    "cashfree-pg": "^5.1.0",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
