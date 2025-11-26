@@ -1,4 +1,9 @@
 import { createClient } from './client';
+import { Database } from '@/types_db';
+
+type Tables = Database['public']['Tables'] & { test_results: any };
+type TestResultsInsert = Tables['test_results']['Insert'] | any;
+type TestResultsUpdate = Tables['test_results']['Update'] | any;
 
 export interface TestResult {
   id: string;
@@ -10,44 +15,64 @@ export interface TestResult {
   percentile: number;
   test_duration: number;
   words_read: number;
-  created_at: string;
   is_premium: boolean;
+  created_at: string;
 }
 
-export async function saveTestResult(testResultId: string): Promise<{ data: TestResult | null; error: Error | null }> {
+// CREATE
+export async function createTestResult(
+  testData: Omit<TestResult, 'id' | 'created_at' | 'is_premium'> & { is_premium?: boolean }
+) {
+  const supabase = createClient();
+  const insertPayload: TestResultsInsert = {
+    ...testData,
+    is_premium: testData.is_premium ?? false,
+    created_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from('test_results')
+    .insert(insertPayload)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as TestResult;
+}
+
+// UPDATE
+export async function saveTestResult(
+  testResultId: string,
+  updates: Partial<Omit<TestResult, 'id' | 'created_at'>>
+) {
   try {
     const supabase = createClient();
-    
-    // First, get the test result from the test_results table
-    const { data: testResult, error: fetchError } = await supabase
-      .from('test_results')
-      .select('*')
-      .eq('id', testResultId)
-      .single();
 
-    if (fetchError) throw fetchError;
-    if (!testResult) throw new Error('Test result not found');
+   const updatePayload: any = {
+  ...updates,
+  updated_at: new Date().toISOString(),
+};
 
-    // Update the test result to mark it as premium
-    const { data: updatedResult, error: updateError } = await supabase
+
+    const { data, error } = await supabase
       .from('test_results')
-      .update({ is_premium: true })
+      .update(updatePayload)
       .eq('id', testResultId)
       .select()
       .single();
 
-    if (updateError) throw updateError;
-
-    return { data: updatedResult, error: null };
+    if (error) throw error;
+    return { data: data as TestResult, error: null };
   } catch (error) {
     console.error('Error saving test result:', error);
-    return { 
-      data: null, 
-      error: error instanceof Error ? error : new Error('Failed to save test result') 
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Failed to save test result'),
     };
   }
 }
 
+// GET
 export async function getUserTestResults(userId: string) {
   const supabase = createClient();
   const { data, error } = await supabase
@@ -58,20 +83,4 @@ export async function getUserTestResults(userId: string) {
 
   if (error) throw error;
   return data as TestResult[];
-}
-
-export async function createTestResult(testData: Omit<TestResult, 'id' | 'created_at' | 'is_premium'>) {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from('test_results')
-    .insert([{
-      ...testData,
-      is_premium: false,
-      created_at: new Date().toISOString()
-    }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data as TestResult;
 }

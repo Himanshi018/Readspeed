@@ -1,105 +1,14 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
-
-export interface Database {
-  public: {
-    Tables: {
-      profiles: {
-        Row: {
-          id: string
-          updated_at?: string | null
-          username?: string | null
-          full_name?: string | null
-          avatar_url?: string | null
-          website?: string | null
-          is_premium: boolean
-          premium_until: string | null
-          created_at: string
-          email: string
-        }
-        Insert: {
-          id: string
-          updated_at?: string | null
-          username?: string | null
-          full_name?: string | null
-          avatar_url?: string | null
-          website?: string | null
-          is_premium?: boolean
-          premium_until?: string | null
-          created_at?: string
-          email: string
-        }
-        Update: {
-          id?: string
-          updated_at?: string | null
-          username?: string | null
-          full_name?: string | null
-          avatar_url?: string | null
-          website?: string | null
-          is_premium?: boolean
-          premium_until?: string | null
-          created_at?: string
-          email?: string
-        }
-      }
-      test_results: {
-        Row: {
-          id: string
-          user_id: string
-          wpm: number
-          accuracy: number
-          comprehension: number
-          reading_level: string
-          percentile: number
-          test_duration: number
-          words_read: number
-          is_premium: boolean
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          wpm: number
-          accuracy: number
-          comprehension: number
-          reading_level: string
-          percentile: number
-          test_duration: number
-          words_read: number
-          is_premium?: boolean
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          wpm?: number
-          accuracy?: number
-          comprehension?: number
-          reading_level?: string
-          percentile?: number
-          test_duration?: number
-          words_read?: number
-          is_premium?: boolean
-          created_at?: string
-        }
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
+export type test_results = {
+  id: string
+  user_id: string | null
+  wpm: number | null
+  accuracy: number | null
+  comprehension: number | null
+  reading_level: string | null
+  percentile: number | null
+  test_duration: number | null
+  words_read: number | null
+  is_premium: boolean | null
+  created_at: string
+  updated_at: string | null   // <-- yeh line add kar de
 }
