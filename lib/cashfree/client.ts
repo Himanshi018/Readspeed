@@ -1,6 +1,6 @@
 export function createCashfreeClient() {
   return {
-    loadCheckout: async ({ orderToken }) => {
+    loadCheckout: async ({ orderToken }: { orderToken: string }) => {
       return new Promise((resolve) => {
         const script = document.createElement("script");
         script.src = "https://sdk.cashfree.com/js/ui/2.0.0/cashfree.sandbox.js";
