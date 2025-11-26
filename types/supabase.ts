@@ -100,6 +100,7 @@ export type Database = {
           amount: number;
           currency: string;
           interval: string;
+          trial_period_days: number | null;
           created_at: string;
         };
         Insert: {
@@ -107,6 +108,7 @@ export type Database = {
           amount: number;
           currency: string;
           interval: string;
+          trial_period_days?: number | null;
           created_at?: string;
         };
         Update: {
@@ -114,6 +116,7 @@ export type Database = {
           amount?: number;
           currency?: string;
           interval?: string;
+          trial_period_days?: number | null;
           created_at?: string;
         };
       };

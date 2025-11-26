@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { savePremiumStatus } from "@/lib/supabase/user";
 import Button from '@/components/ui/Button/Button';
-import { CheckCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Link from 'next/link';
 
-export default function PremiumSuccess() {
+function PremiumSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +49,7 @@ export default function PremiumSuccess() {
   useEffect(() => {
     const verifyPayment = async () => {
       try {
-        // First verify the payment (you might want to add actual payment verification here)
+        // Verify payment (you might want to add actual payment verification here)
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         // Save premium status to user's profile
@@ -67,19 +67,12 @@ export default function PremiumSuccess() {
     verifyPayment();
   }, []);
 
-
-  const handleDownloadPDF = () => {
-    // Implement PDF download functionality
-    console.log('Downloading PDF...');
-    // You can use a library like jsPDF or html2canvas to generate a PDF
-  };
-
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-green-700 p-6">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-green-300 border-t-green-100 rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-green-100">Verifying your payment...</p>
+          <Loader2 className="h-12 w-12 text-green-600 animate-spin mx-auto mb-4" />
+          <p className="text-lg text-gray-600">Verifying your payment...</p>
         </div>
       </div>
     );
@@ -87,74 +80,75 @@ export default function PremiumSuccess() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-red-900 to-red-700 p-6 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-red-50 to-white p-6">
         <div className="bg-red-100 p-6 rounded-full mb-6">
           <svg className="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
           </svg>
         </div>
-        <h1 className="text-3xl font-bold text-white mb-4">Payment Verification Failed</h1>
-        <p className="text-xl text-red-100 max-w-md mb-8">{error}</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Verification Failed</h1>
+        <p className="text-lg text-gray-600 max-w-md mb-8">{error}</p>
         <Button 
           onClick={() => router.push('/')}
-          className="bg-white text-red-700 hover:bg-red-50 px-8 py-3 text-lg"
+          className="bg-red-600 text-white hover:bg-red-700 px-6 py-2 text-lg"
         >
           Return to Home
         </Button>
+        <p className="mt-6 text-sm text-gray-500">
+          Need help? <a href="mailto:support@readspeed.com" className="text-red-600 hover:underline">Contact support</a>
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-900 to-green-700 p-6">
-      <div className="text-center max-w-2xl">
-        <div className="bg-white/10 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/10">
-          <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-16 h-16 text-green-500" />
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+      <main className="max-w-3xl mx-auto px-4 py-16 sm:px-6 lg:px-8 text-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-12">
+          <div className="flex justify-center mb-6">
+            <div className="bg-green-100 p-3 rounded-full">
+              <CheckCircle className="h-12 w-12 text-green-600" />
+            </div>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4"> Premium Unlocked!</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Premium Activated Successfully!
+          </h1>
           
-          <p className="text-xl text-green-100 mb-8 max-w-md mx-auto">
-            Thank you for your payment. Enjoy unlimited premium features forever.
+          <p className="text-lg text-gray-600 mb-8">
+            Thank you for upgrading to ReadSpeed Premium! Your account has been successfully upgraded.
           </p>
           
-          <div className="space-y-4 max-w-sm mx-auto">
-            <div className="flex items-center space-x-3 text-green-100">
-              <CheckCircle className="w-5 h-5 text-green-300 flex-shrink-0" />
-              <span>Ad-free experience</span>
-            </div>
-            <div className="flex items-center space-x-3 text-green-100">
-              <CheckCircle className="w-5 h-5 text-green-300 flex-shrink-0" />
-              <span>Unlimited reading tests</span>
-            </div>
-            <div className="flex items-center space-x-3 text-green-100">
-              <CheckCircle className="w-5 h-5 text-green-300 flex-shrink-0" />
-              <span>Advanced analytics</span>
-            </div>
-          </div>
-          
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-8 space-y-4">
             <Link 
-              href="/test"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-green-700 font-semibold rounded-xl hover:bg-green-50 transition-colors"
+              href="/account" 
+              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
-              Take a Test <ArrowRight className="ml-2 w-5 h-5" />
+              Go to Your Account
+              <ArrowRight className="ml-2 -mr-1 h-5 w-5" />
             </Link>
             
-            <Link 
-              href="/dashboard"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-colors border border-white/20"
-            >
-              Go to Dashboard
-            </Link>
+            <p className="text-sm text-gray-500 mt-4">
+              Need help? <a href="mailto:support@readspeed.com" className="text-green-600 hover:underline">Contact support</a>
+            </p>
           </div>
-          
-          <p className="mt-8 text-sm text-green-200">
-            Having issues? <a href="mailto:support@readspeed.com" className="underline hover:text-white">Contact support</a>
-          </p>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function PremiumSuccess() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-8 w-8 text-green-600 animate-spin mb-2" />
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
-    </div>
+    }>
+      <PremiumSuccessContent />
+    </Suspense>
   );
 }

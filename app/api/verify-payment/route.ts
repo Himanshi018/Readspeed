@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 
+// Mark this route as dynamic to prevent static generation
+export const dynamic = 'force-dynamic';
+
 // Test credentials - Replace with environment variables in production
-const CASHFREE_APP_ID = 'YOUR_TEST_APP_ID';
-const CASHFREE_SECRET_KEY = 'YOUR_TEST_SECRET_KEY';
-const CASHFREE_BASE_URL = 'https://sandbox.cashfree.com/pg';
+const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID || 'YOUR_TEST_APP_ID';
+const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY || 'YOUR_TEST_SECRET_KEY';
+const CASHFREE_BASE_URL = process.env.CASHFREE_BASE_URL || 'https://sandbox.cashfree.com/pg';
 
 export async function GET(request: Request) {
   try {
