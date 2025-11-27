@@ -3,21 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-const SAMPLE_TEXT = `In the heart of a bustling city, where skyscrapers touched the clouds and neon signs painted the night sky, there lived a young librarian named Maya. Her small, cozy library was tucked away between a coffee shop and an antique bookstore, a hidden gem that few people knew about. Maya had always believed that books held magic within their pages, stories that could transport readers to distant lands and forgotten times.
+const SAMPLE_TEXT = `In the heart of a restless city, where skyscrapers brushed the clouds and neon lights breathed color into the night, a quiet librarian named Maya kept her tiny library alive. Tucked between a coffee shop and an old antique store, her library was a warm secret — a place where she believed the magic of stories still whispered through the shelves.
 
-One rainy Tuesday afternoon, as thunder rumbled overhead and rain tapped gently against the windows, an elderly man with kind eyes and a worn leather satchel entered the library. He moved slowly, his fingers tracing the spines of books as if greeting old friends. Maya watched him with curiosity, noticing how he seemed to know exactly where each book belonged, even though he had never visited before.
+One rainy afternoon, an elderly man walked in, moving with the familiarity of someone revisiting an old dream. His name was Professor Alistair, a historian who had spent decades chasing legends of lost civilizations. While searching for a rare manuscript, he pulled down a dusty book — and a small, ornate key slipped out, shimmering with strange engravings. The professor froze. It was the key from a legend he had followed for years: a hidden library beneath the city where forgotten stories were said to sleep.
 
-The man introduced himself as Professor Alistair, a retired historian who had spent his life studying ancient civilizations. He had come to the library seeking a rare manuscript about lost cities, but what he found instead was something far more extraordinary. As he pulled a dusty volume from the highest shelf, a small, ornate key fell to the floor with a soft clink.
+Guided by old clues, cryptic notes, and passages concealed in the margins of ancient books, Maya and the professor set out on a quiet adventure. They discovered hidden rooms, met strangers who guarded fragments of the same myth, and slowly assembled the path toward the underground library — a place said to hold every story the world had misplaced.
 
-Maya picked up the key, noticing intricate engravings that seemed to shimmer in the dim light. Professor Alistair's eyes widened with recognition. He explained that the key was part of a legend he had been researching for decades—a story about a hidden library beneath the city, a place where all forgotten stories were preserved, waiting for the right person to discover them.
+When they finally found it, shelves stretched into the dark like forests of memory, and books glowed faintly as though lit from within. Maya felt something unlock inside her — the certainty that stories weren’t just words but living worlds. She became the guardian of this forgotten place, and the professor, after a lifetime of searching, found the answers he never knew he needed.
 
-Together, Maya and Professor Alistair embarked on an adventure that would change their lives forever. They followed clues hidden in old books, deciphered cryptic messages written in margins, and discovered secret passages that had been sealed for centuries. Along the way, they met other book lovers who had also stumbled upon fragments of the legend, each person adding a piece to the puzzle.
-
-The journey taught Maya that libraries were not just buildings filled with books, but gateways to infinite worlds. She learned that every story, no matter how small or forgotten, had the power to connect people across time and space. And when they finally found the hidden library, with its towering shelves reaching into darkness and books that seemed to glow with inner light, Maya understood that she had found her true calling.
-
-The hidden library became a sanctuary for stories that the world had nearly forgotten—tales of courage, love, adventure, and hope. Maya became its guardian, ensuring that these precious narratives would never be lost again. And Professor Alistair, with tears of joy in his eyes, finally found the answers he had been seeking his entire life, not in dusty archives, but in the living, breathing stories that surrounded them.
-
-Years later, when people asked Maya how she had discovered such a remarkable place, she would simply smile and say, "Sometimes the greatest adventures begin when you're simply looking for a good book to read." The library continued to grow, its shelves expanding with every story that needed a home, and Maya knew that as long as there were stories to tell, there would always be a place for them in her magical library.`;
+In the years that followed, whenever people asked Maya how she discovered such a wondrous library, she simply smiled and said, “All I wanted was a good book — and the stories led the way.`
 
 const WORDS_COUNT = SAMPLE_TEXT.split(/\s+/).length;
 
