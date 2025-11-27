@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/Toasts/toaster';
 import { PropsWithChildren, Suspense } from 'react';
 import { getURL } from '@/utils/helpers';
 import 'styles/main.css';
+import { Analytics } from "@vercel/analytics/react";
 
 const title = 'ReadSpeed — Reading Speed Test in 60 Seconds';
 const description =
@@ -50,6 +51,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
           src="https://sdk.cashfree.com/js/ui/2.0.0/cashfree.js"
           async
         ></script>
+        <Analytics />       
       </body>
     </html>
   );
