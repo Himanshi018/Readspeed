@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 const SAMPLE_TEXT = `In the heart of a restless city, where skyscrapers brushed the clouds and neon lights breathed color into the night, a quiet librarian named Maya kept her tiny library alive. Tucked between a coffee shop and an old antique store, her library was a warm secret — a place where she believed the magic of stories still whispered through the shelves.
@@ -18,21 +18,13 @@ const WORDS_COUNT = SAMPLE_TEXT.split(/\s+/).length;
 type TestPhase = 'ready' | 'reading' | 'finished';
 
 function getSpeedMessage(wpm: number): string {
-  if (wpm >= 400) {
-    return "You're basically The Flash with words! ⚡";
-  } else if (wpm >= 300) {
-    return "Speed reader extraordinaire! You devour books like snacks! 📚";
-  } else if (wpm >= 250) {
-    return "Impressive! You're reading at lightning speed! 🌟";
-  } else if (wpm >= 200) {
-    return "Great pace! You're faster than most readers! 🚀";
-  } else if (wpm >= 150) {
-    return "Solid reading speed! Keep it up! 💪";
-  } else if (wpm >= 100) {
-    return "Good pace! You're reading comfortably! 📖";
-  } else {
-    return "Take your time! Reading is about enjoyment, not speed! 😊";
-  }
+  if (wpm >= 400) return "You're basically The Flash with words! ⚡";
+  if (wpm >= 300) return "Speed reader extraordinaire! You devour books like snacks! 📚";
+  if (wpm >= 250) return "Impressive! You're reading at lightning speed! 🌟";
+  if (wpm >= 200) return "Great pace! You're faster than most readers! 🚀";
+  if (wpm >= 150) return "Solid reading speed! Keep it up! 💪";
+  if (wpm >= 100) return "Good pace! You're reading comfortably! 📖";
+  return "Take your time! Reading is about enjoyment, not speed! 😊";
 }
 
 function getPercentile(wpm: number): number {
@@ -52,15 +44,43 @@ export default function TestComponent() {
   const [wordsRead, setWordsRead] = useState(0);
   const [wpm, setWpm] = useState(0);
   const [finalWpm, setFinalWpm] = useState(0);
-  const [testComplete, setTestComplete] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const wpmIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
 
+  // 🔒 prevents auto-submit from firing again
+  const hasCompletedRef = useRef(false); // <-- NEW
+
+  const handleTestComplete = useCallback(() => {
+    if (phase !== 'reading') return;
+    if (hasCompletedRef.current) return; // 🔒 already completed
+
+    hasCompletedRef.current = true; // lock
+
+    const elapsedMinutes =
+      startTimeRef.current !== null
+        ? Math.max((Date.now() - startTimeRef.current) / 60000, 1 / 60)
+        : 1;
+
+    setFinalWpm(Math.round(wordsRead / elapsedMinutes));
+    setPhase('finished');
+    setShowConfetti(true);
+
+    // clear intervals
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (wpmIntervalRef.current) clearInterval(wpmIntervalRef.current);
+  }, [phase, wordsRead]);
+
+  // Timer + WPM effects
   useEffect(() => {
     if (phase !== 'reading') return;
+
+    // Clear old intervals
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (wpmIntervalRef.current) clearInterval(wpmIntervalRef.current);
 
     intervalRef.current = setInterval(() => {
       setTimeLeft((prev) => {
@@ -83,25 +103,18 @@ export default function TestComponent() {
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (wpmIntervalRef.current) clearInterval(wpmIntervalRef.current);
     };
-  }, [phase, wordsRead]);
+  }, [phase, handleTestComplete, wordsRead]);
 
   const handleStart = () => {
     setPhase('reading');
     setTimeLeft(60);
     setWordsRead(0);
     setWpm(0);
-    startTimeRef.current = Date.now();
-  };
+    setFinalWpm(0);
+    setShowConfetti(false);
 
-  const handleTestComplete = () => {
-    if (phase !== 'reading') return;
-    const elapsedMinutes =
-      startTimeRef.current !== null ? Math.max((Date.now() - startTimeRef.current) / 60000, 1 / 60) : 1;
-    setFinalWpm(Math.round(wordsRead / elapsedMinutes));
-    setPhase('finished');
-    setShowConfetti(true);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (wpmIntervalRef.current) clearInterval(wpmIntervalRef.current);
+    startTimeRef.current = Date.now();
+    hasCompletedRef.current = false; // 🔄 reset lock
   };
 
   const handleRestart = () => {
@@ -111,32 +124,45 @@ export default function TestComponent() {
     setWpm(0);
     setFinalWpm(0);
     setShowConfetti(false);
+
     startTimeRef.current = null;
+    hasCompletedRef.current = false; // 🔄 reset lock
   };
 
-  useEffect(() => {
-    if (phase !== 'reading' || !textContainerRef.current) return;
-
-    const handleScroll = () => {
-      const container = textContainerRef.current;
-      if (!container) return;
-      const progress = Math.min(
-        container.scrollTop / Math.max(container.scrollHeight - container.clientHeight, 1),
-        1
-      );
-      setWordsRead(Math.min(Math.round(WORDS_COUNT * progress), WORDS_COUNT));
-    };
+  // Scroll progress
+  const handleScroll = useCallback(() => {
+    if (phase !== 'reading') return;
+    if (hasCompletedRef.current) return; // 🔒 don't update after finish
 
     const container = textContainerRef.current;
+    if (!container) return;
+
+    const progress = Math.min(
+      container.scrollTop / Math.max(container.scrollHeight - container.clientHeight, 1),
+      1
+    );
+
+    setWordsRead(Math.round(WORDS_COUNT * progress));
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== 'reading') return;
+
+    const container = textContainerRef.current;
+    if (!container) return;
+
     container.addEventListener('scroll', handleScroll);
     handleScroll();
-    const interval = setInterval(handleScroll, 400);
+
+    const interval = setInterval(() => {
+      handleScroll();
+    }, 400);
 
     return () => {
       container.removeEventListener('scroll', handleScroll);
       clearInterval(interval);
     };
-  }, [phase]);
+  }, [phase, handleScroll]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fff1f0] via-[#ffe9e4] to-[#ffe4e1] px-4 py-10 sm:px-6 lg:px-8">
@@ -158,7 +184,7 @@ export default function TestComponent() {
               <div className="flex flex-col items-center gap-4">
                 <button
                   onClick={handleStart}
-                  className="w-full rounded-2xl bg-[#ff6b6b] px-8 py-4 text-lg font-semibold text-white shadow-[0_20px_40px_rgba(255,107,107,0.25)] transition hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ff6b6b]/40 sm:w-auto sm:px-12 sm:text-xl"
+                  className="w-full rounded-2xl bg-[#ff6b6b] px-8 py-4 text-lg font-semibold text-white shadow-[0_20px_40px_rgba(255,107,107,0.25)] hover:scale-105 transition sm:w-auto sm:px-12 sm:text-xl"
                 >
                   Start Reading
                 </button>
@@ -177,7 +203,9 @@ export default function TestComponent() {
                   <div className="text-6xl font-bold text-[#ff6b6b] sm:text-7xl">{timeLeft}</div>
                   <p className="mt-1 text-sm text-[#a96763]">seconds left</p>
                 </div>
+
                 <div className="hidden h-16 w-px bg-white/50 sm:block sm:h-24" />
+
                 <div>
                   <p className="text-xs uppercase tracking-[0.4em] text-[#b1564d]">Live WPM</p>
                   <div className="text-4xl font-semibold text-[#d94862] sm:text-5xl">{wpm}</div>
@@ -189,13 +217,13 @@ export default function TestComponent() {
                 ref={textContainerRef}
                 className="max-h-96 overflow-y-auto rounded-3xl border border-[#ffd1c1]/80 bg-white/70 p-6 text-base leading-relaxed text-[#4a2b2b] shadow-inner sm:text-lg"
               >
-                <p className="whitespace-pre-wrap select-text">{SAMPLE_TEXT}</p>
+                <p className="whitespace-pre-wrap">{SAMPLE_TEXT}</p>
               </div>
 
               <div className="flex justify-center">
                 <button
                   onClick={handleTestComplete}
-                  className="w-full rounded-2xl bg-[#4a1f1f] px-8 py-4 text-lg font-semibold text-white shadow-[0_20px_40px_rgba(74,31,31,0.3)] transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#4a1f1f]/40 sm:w-auto sm:px-12 sm:text-xl"
+                  className="w-full rounded-2xl bg-[#4a1f1f] px-8 py-4 text-lg font-semibold text-white shadow-[0_20px_40px_rgba(74,31,31,0.3)] hover:scale-[1.02] transition sm:w-auto sm:px-12 sm:text-xl"
                 >
                   I'm Done
                 </button>
@@ -239,18 +267,17 @@ export default function TestComponent() {
               <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
                 <button
                   onClick={handleRestart}
-                  className="w-full rounded-2xl bg-[#ff6b6b] px-8 py-4 text-lg font-semibold text-white shadow-[0_20px_40px_rgba(255,107,107,0.25)] transition hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ff6b6b]/40 sm:w-auto sm:px-10"
+                  className="w-full rounded-2xl bg-[#ff6b6b] px-8 py-4 text-lg font-semibold text-white shadow-[0_20px_40px_rgba(255,107,107,0.25)] hover:scale-105 transition sm:w-auto sm:px-10"
                 >
                   Restart Test
                 </button>
                 <Link
                   href="/"
-                  className="w-full rounded-2xl border border-[#ffd1c1]/70 bg-white/80 px-8 py-4 text-center text-lg font-semibold text-[#4a1f1f] shadow-[0_15px_40px_rgba(255,209,193,0.4)] transition hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd1c1]/60 sm:w-auto sm:px-10"
+                  className="w-full rounded-2xl border border-[#ffd1c1]/70 bg-white/80 px-8 py-4 text-center text-lg font-semibold text-[#4a1f1f] shadow-[0_15px_40px_rgba(255,209,193,0.4)] hover:-translate-y-1 transition sm:w-auto sm:px-10"
                 >
                   Back to Home
                 </Link>
               </div>
-
             </div>
           )}
         </div>
@@ -267,7 +294,6 @@ export default function TestComponent() {
             opacity: 0;
           }
         }
-
         .animate-confetti {
           width: 10px;
           height: 16px;
